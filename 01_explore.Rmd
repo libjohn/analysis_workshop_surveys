@@ -89,7 +89,8 @@ pre_post_tbl %>%
 ```{r}
 pre_post_tbl %>% 
   ggplot(aes(scatterplot_experience)) +
-  geom_bar(aes(fill = scatterplot_experience)) +
+  geom_bar(aes(fill = scatterplot_experience),
+           color = "black") +
   facet_wrap(~ fct_rev(survey)) +
   scale_fill_brewer(palette = "BrBG") +
   ggtitle("Scatterplot experience") + 
@@ -189,7 +190,8 @@ pre_post_tbl %>%
 
 
 
-```{r}
+```
+{r}
 pre_post_tbl %>% 
   # group_by(survey, scatterplot_experience) %>% 
   # summarise(total = n()) %>% 
