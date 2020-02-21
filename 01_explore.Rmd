@@ -1,0 +1,211 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+```
+
+
+
+```{r}
+pre <- read_csv("data/Pre_ggplot2_2020_02_18.csv") %>%
+  mutate("survey" = "pre")
+post <- read_csv("data/Post_ggplot2_2020_02_18.csv") %>% 
+  mutate("survey" = "post")
+```
+
+
+```{r}
+new_names_pre <- c("timestamp", "why_here", "tools_programming", 
+                   "tools_dbms", "tools_git", "tools_os", 
+                   "scatterplot_experience", "ggplot2_experience", 
+                   "multilayer_experience",
+                   "documentation_experience", 
+                   "aes_experience", "shape_quiz",
+                   "workflow_satisfaction",
+                   "survey")
+new_names_post <- c("timestamp", "scatterplot_experience",
+                    "ggplot2_experience",
+                    "multilayer_experience",
+                    "documentation_experience",
+                    "aes_experience", "shape_quiz",
+                    "apply_learning", 
+                    "learning_comfort", "clear_answers",
+                    "intructor_enthusiasm",
+                    "instructor_interaction",
+                    "instructor_knowledge", "survey")
+
+
+colnames(pre) <- new_names_pre
+colnames(post) <- new_names_post
+
+colnames(pre)
+colnames(post)
+
+
+```
+
+
+
+```{r}
+pre_post_tbl <- bind_rows(pre, post) 
+
+pre_post_tbl <- pre_post_tbl %>% 
+  mutate(scatterplot_experience = str_to_title(scatterplot_experience))
+
+fct_count(pre_post_tbl$scatterplot_experience) %>% 
+  arrange(fct_rev(f))
+```
+
+
+```{r}
+pre_post_tbl <- pre_post_tbl %>% 
+  mutate_at(vars(ends_with("_experience")),
+            ~ str_to_title(.)) %>% 
+  mutate_at(vars(ends_with("_experience")), 
+            ~fct_relevel(., levels = c("Strongly Disagree", "Disagree",  
+                                                         "Neutral", "Agree", "Strongly Agree")))
+```
+
+
+
+
+```{r}
+pre_post_tbl %>% 
+  count(survey)
+```
+
+
+```{r}
+pre_post_tbl %>% 
+  group_by(survey, scatterplot_experience) %>% 
+  summarise(total = n()) %>% 
+  arrange(scatterplot_experience)
+```
+
+
+```{r}
+pre_post_tbl %>% 
+  ggplot(aes(scatterplot_experience)) +
+  geom_bar(aes(fill = scatterplot_experience)) +
+  facet_wrap(~ fct_rev(survey)) +
+  scale_fill_brewer(palette = "BrBG") +
+  ggtitle("Scatterplot experience") + 
+  theme(legend.position="none")
+```
+
+
+```{r fig.height=4, fig.width=9}
+# ggplot2_experience    multilayer_experience   documentation_experience   documentation_experience
+pre_post_tbl %>% 
+  ggplot(aes(ggplot2_experience)) +
+  geom_bar(aes(fill = ggplot2_experience)
+           , color = "black") +
+  scale_fill_brewer(palette = "BrBG") +
+  facet_wrap(~ fct_rev(survey)) +
+  ggtitle("ggplot2 experience") + 
+  theme(legend.position="none")
+
+# ggsave("ouput/images/ggplot2_experience.png")
+
+pre_post_tbl %>% 
+  ggplot(aes(multilayer_experience)) +
+  geom_bar(aes(fill = multilayer_experience)
+           , color = "black") +
+  scale_fill_brewer(palette = "BrBG") +
+  facet_wrap(~ fct_rev(survey)) +
+  ggtitle("ggplot2 layers -- experience") + 
+  theme(legend.position="none")
+
+# ggsave("ouput/images/multilayer_experience.png")
+
+pre_post_tbl %>% 
+  ggplot(aes(documentation_experience)) +
+  geom_bar(aes(fill = documentation_experience)
+           , color = "black") +
+  scale_fill_brewer(palette = "BrBG") +
+  facet_wrap(~ fct_rev(survey)) +
+  ggtitle("ggplot2 documentation experience") + 
+  theme(legend.position="none")
+
+# ggsave("ouput/images/documentation_experience.png")
+
+pre_post_tbl %>% 
+  ggplot(aes(aes_experience)) +
+  geom_bar(aes(fill = aes_experience)
+           , color = "black") +
+  scale_fill_brewer(palette = "BrBG") +
+  facet_wrap(~ fct_rev(survey)) +
+  ggtitle("aethetics mapping") + 
+  theme(legend.position="none")
+
+# ggsave("ouput/images/aes_experience.png")
+
+
+```
+
+
+```{r}
+pre_post_tbl %>% 
+  select(ends_with("_experience"))
+```
+
+
+
+```{r}
+pre_post_tbl %>% 
+  group_by(survey, scatterplot_experience) %>% 
+  summarise(total = n()) %>% 
+  arrange(scatterplot_experience) %>% 
+  ggplot(aes(total, scatterplot_experience, group = scatterplot_experience, color = survey)) +
+  geom_point() +
+  geom_line()
+```
+
+
+
+```{r}
+pre_post_tbl %>% 
+  group_by(survey, scatterplot_experience) %>% 
+  summarise(total = n()) %>% 
+  arrange(scatterplot_experience) %>% 
+  ggplot(aes(scatterplot_experience, total, group = scatterplot_experience, color = survey)) +
+  geom_point() +
+  geom_line(aes(group = scatterplot_experience))
+```
+
+
+```
+{r}
+pre_post_tbl %>% 
+  # group_by(survey, scatterplot_experience) %>% 
+  # summarise(total = n()) %>% 
+  # arrange(scatterplot_experience) %>% 
+  ggplot(aes(total, scatterplot_experience, group = scatterplot_experience, color = survey)) +
+  geom_point() 
+```
+
+
+
+```{r}
+pre_post_tbl %>% 
+  # group_by(survey, scatterplot_experience) %>% 
+  # summarise(total = n()) %>% 
+  # arrange(scatterplot_experience) %>% 
+  ggplot(aes(fct_rev(survey), scatterplot_experience, color = survey)) +
+  geom_point(aes(size = scatterplot_experience)) +
+  facet_wrap(~ scatterplot_experience)
+  # geom_line(aes())
+```
+
+
+```{r}
+pre_post_tbl %>% 
+  ggplot(aes(scatterplot_experience, fill = fct_rev(survey))) +
+  geom_bar(aes(), position = "dodge") 
+```
+
+
+
