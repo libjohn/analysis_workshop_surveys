@@ -53,7 +53,8 @@ colnames(post)
 pre_post_tbl <- bind_rows(pre, post) 
 
 pre_post_tbl <- pre_post_tbl %>% 
-  mutate(scatterplot_experience = str_to_title(scatterplot_experience))
+  mutate(scatterplot_experience =
+           str_to_title(scatterplot_experience))
 
 fct_count(pre_post_tbl$scatterplot_experience) %>% 
   arrange(fct_rev(f))
@@ -65,8 +66,10 @@ pre_post_tbl <- pre_post_tbl %>%
   mutate_at(vars(ends_with("_experience")),
             ~ str_to_title(.)) %>% 
   mutate_at(vars(ends_with("_experience")), 
-            ~fct_relevel(., levels = c("Strongly Disagree", "Disagree",  
-                                                         "Neutral", "Agree", "Strongly Agree")))
+            ~fct_relevel(., levels = c("Strongly Disagree",
+                                       "Disagree",
+                                       "Neutral", "Agree", 
+                                       "Strongly Agree")))
 ```
 
 
@@ -75,6 +78,38 @@ pre_post_tbl <- pre_post_tbl %>%
 ```{r}
 pre_post_tbl %>% 
   count(survey)
+```
+
+```{r big picture, fig.height=7, fig.width=9, message=FALSE, warning=FALSE}
+pre_post_tbl %>% 
+  select(timestamp, survey, ends_with("_experience")) %>% 
+  pivot_longer(ends_with("_experience"),
+               names_to = "experience") %>% 
+  mutate(value = str_to_title(value)) %>% 
+  mutate(value = fct_relevel(value, levels = c("Strongly Disagree",
+                                       "Disagree",
+                                       "Neutral", "Agree", 
+                                       "Strongly Agree"))) %>% 
+  mutate(experience = str_extract(experience, "\\w+(?=_)")) %>% 
+  mutate(experience = fct_relevel(experience, levels = c(
+    "scatterplot", "ggplot2", "aes", "multilayer", "documentation")
+  )) %>% 
+  # filter(experience == "scatterplot") %>% 
+  # filter(survey != "post" | experience != "scatterplot") %>% 
+  ggplot(aes(value)) +
+    geom_bar(aes(fill = value), color = "black") +
+    geom_bar(data = . %>% 
+               filter(survey == "post" & 
+                        experience == "scatterplot"), 
+             fill = "grey75") +
+    facet_grid(experience ~ fct_rev(survey))+ #,
+    scale_fill_brewer(palette = "BrBG") + 
+    theme(legend.position="none") +
+  labs(title = "Pre & Post survey results",
+       x = "", y = "",
+       caption = "Source: Registrant surveys at time of workshop")
+
+ggsave("output/images/big_picture.png")
 ```
 
 
@@ -142,9 +177,33 @@ pre_post_tbl %>%
   ggtitle("aethetics mapping") + 
   theme(legend.position="none")
 
-# ggsave("ouput/images/aes_experience.png")
+# ggsave(foo, "ouput/images/aes_experience.png")
+```
 
 
+
+
+```
+{r}
+pre_post_tbl %>% 
+  ggplot(aes(aes_experience)) +
+  geom_bar(aes(fill = aes_experience)
+           , color = "black") +
+  # scale_fill_brewer(palette = "BrBG") +
+  scale_fill_manual(values = col_scale) +
+  facet_wrap(~ fct_rev(survey)) +
+  ggtitle("aethetics mapping") + 
+  theme(legend.position="none")
+
+pre_post_tbl %>% 
+  ggplot(aes(scatterplot_experience)) +
+  geom_bar(aes(fill = scatterplot_experience),
+           color = "black") +
+  facet_wrap(~ fct_rev(survey)) +
+  # scale_fill_brewer(palette = "BrBG") +
+  scale_fill_manual(values = col_scale2) +
+  ggtitle("Scatterplot experience") + 
+  theme(legend.position="none")
 ```
 
 
