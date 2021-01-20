@@ -5,11 +5,12 @@ output: html_notebook
 
 ```{r}
 library(tidyverse)
+library(hrbrthemes)
 ```
 
 ## Ingest data
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 pre <- read_csv("data/Pre_ggplot2_2020_02_18.csv") %>%
   mutate("survey" = "pre")
 post <- read_csv("data/Post_ggplot2_2020_02_18.csv") %>% 
@@ -44,8 +45,8 @@ new_names_post <- c("timestamp", "scatterplot_experience",
 colnames(pre) <- new_names_pre
 colnames(post) <- new_names_post
 
-colnames(pre)
-colnames(post)
+# colnames(pre)
+# colnames(post)
 
 
 ```
@@ -58,7 +59,7 @@ pre_post_tbl <- bind_rows(pre, post)
 
 ## Visualize
 
-```{r big picture, fig.height=7, fig.width=10, message=FALSE, warning=FALSE}
+```{r big picture, fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
 pre_post_tbl %>% 
   select(timestamp, survey, ends_with("_experience")) %>% 
   pivot_longer(ends_with("_experience"),
@@ -76,12 +77,12 @@ pre_post_tbl %>%
     geom_bar(aes(fill = value), color = "black") +
     facet_grid(experience ~ fct_rev(str_to_title(survey)))+ 
     scale_fill_brewer(palette = "BrBG") + 
-    theme(legend.position="none") +
+    scale_y_continuous(breaks = c(0,3,6)) +
+    hrbrthemes::theme_ipsum(grid = "Y", ticks = TRUE) +
+    theme(legend.position="none", plot.title.position = "plot") +
   labs(title = "Comparison of Pre & Post survey results",
        x = "", y = "",
        caption = "Source: Registrant surveys at time of workshop")
 
 ggsave("output/images/big_picture.png")
 ```
-
-
