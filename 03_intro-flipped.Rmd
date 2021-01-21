@@ -27,16 +27,16 @@ new_names_pre <- c("timestamp", "tools_coder", "tools_models",
                    "import_experience", "scripts_experience", 
                    "subset_experience",
                    "projects_experience", 
-                   "reproducible_experience", "self_help_experience",
-                   "search_help_experience", "apply_learning_experience",
+                   "reproducible_experience", "self_help",
+                   "search_help", "apply_learning",
                    "data_mgt_satisfy", "survey")
 new_names_post <- c("timestamp", "tools_coder", "tools_models", 
                    "tools_rdbms", "tools_version_ctrl", "tools_cli", 
                    "import_experience", "scripts_experience", 
                    "subset_experience",
                    "projects_experience", 
-                   "reproducible_experience", "self_help_experience",
-                   "search_help_experience", "apply_learning_experience",
+                   "reproducible_experience", "self_help",
+                   "search_help", "apply_learning",
                    "data_mgt_satisfy", "survey")
 
 
@@ -55,7 +55,7 @@ pre_post_tbl <- bind_rows(pre, post)
 
 ## Visualize
 
-```{r big picture, fig.height=17, fig.width=12, message=FALSE, warning=FALSE}
+```{r big picture, fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
 pre_post_tbl %>% 
   select(timestamp, survey, ends_with("_experience")) %>% 
   pivot_longer(ends_with("_experience"),
@@ -80,8 +80,31 @@ pre_post_tbl %>%
        x = "", y = "",
        caption = "Source: Registrant surveys at time of workshop")
 
-ggsave("output/images/big_picture.svg")
+
+# ggsave("output/images/big_picture.svg")
 ```
 
 
-![](output/images/big_picture.svg)
+```{r warning=FALSE}
+pre_post_tbl %>% 
+  filter(survey == "pre") %>% 
+  select(timestamp, survey, ends_with("_experience")) %>% 
+  pivot_longer(ends_with("_experience"),
+               names_to = "experience") %>% 
+  mutate(value = str_to_title(value)) %>% 
+  mutate(value = fct_relevel(value, levels = c("Strongly Disagree",
+                                       "Disagree",
+                                       "Neutral", "Agree", 
+                                       "Strongly Agree"))) %>% 
+  mutate(experience = str_extract(experience, "\\w+(?=_)")) %>% 
+  ggplot(aes(value)) +
+    geom_bar(aes(fill = value), color = "black") +
+    scale_fill_brewer(palette = "BrBG") + 
+    hrbrthemes::theme_ipsum(grid = "Y", ticks = TRUE) +
+    theme(legend.position="none", plot.title.position = "plot") +
+  labs(title = "Conflated Experience of Pre survey results",
+       x = "", y = "",
+       caption = "Source: Registrant surveys at time of workshop")
+```
+
+
