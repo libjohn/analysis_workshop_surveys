@@ -84,5 +84,8 @@ pre_post_tbl %>%
        x = "", y = "",
        caption = "Source: Registrant surveys at time of workshop")
 
-ggsave("output/images/big_picture.png")
+ggsave("output/images/big_picture.svg")
 ```
+
+
+![](output/images/big_picture.svg)
