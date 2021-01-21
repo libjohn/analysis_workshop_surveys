@@ -1,0 +1,87 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidyverse)
+library(hrbrthemes)
+```
+
+## Ingest data
+
+```{r message=FALSE, warning=FALSE}
+pre <- read_csv("data/Pre_intro-flipped_20210128.csv") %>%
+  mutate("survey" = "pre")
+post <- read_csv("data/Pre_intro-flipped_20210128.csv") %>% 
+  mutate("survey" = "post")
+```
+
+## Wrangle data
+
+Normalize column labels
+
+```{r}
+new_names_pre <- c("timestamp", "tools_coder", "tools_models", 
+                   "tools_rdbms", "tools_version_ctrl", "tools_cli", 
+                   "import_experience", "scripts_experience", 
+                   "subset_experience",
+                   "projects_experience", 
+                   "reproducible_experience", "self_help_experience",
+                   "search_help_experience", "apply_learning_experience",
+                   "data_mgt_satisfy", "survey")
+new_names_post <- c("timestamp", "tools_coder", "tools_models", 
+                   "tools_rdbms", "tools_version_ctrl", "tools_cli", 
+                   "import_experience", "scripts_experience", 
+                   "subset_experience",
+                   "projects_experience", 
+                   "reproducible_experience", "self_help_experience",
+                   "search_help_experience", "apply_learning_experience",
+                   "data_mgt_satisfy", "survey")
+
+
+colnames(pre) <- new_names_pre
+colnames(post) <- new_names_post
+
+# colnames(pre)
+# colnames(post)
+```
+
+make one table
+
+```{r}
+pre_post_tbl <- bind_rows(pre, post)
+```
+
+## Visualize
+
+```{r big picture, fig.height=17, fig.width=12, message=FALSE, warning=FALSE}
+pre_post_tbl %>% 
+  select(timestamp, survey, ends_with("_experience")) %>% 
+  pivot_longer(ends_with("_experience"),
+               names_to = "experience") %>% 
+  mutate(value = str_to_title(value)) %>% 
+  mutate(value = fct_relevel(value, levels = c("Strongly Disagree",
+                                       "Disagree",
+                                       "Neutral", "Agree", 
+                                       "Strongly Agree"))) %>% 
+  mutate(experience = str_extract(experience, "\\w+(?=_)")) %>% 
+  mutate(experience = fct_relevel(experience, levels = c(
+    "scatterplot", "ggplot2", "aes", "multilayer", "documentation")
+  )) %>% 
+  ggplot(aes(value)) +
+    geom_bar(aes(fill = value), color = "black") +
+    facet_grid(experience ~ fct_rev(str_to_title(survey)))+ 
+    scale_fill_brewer(palette = "BrBG") + 
+    scale_y_continuous(breaks = c(0,3,6)) +
+    hrbrthemes::theme_ipsum(grid = "Y", ticks = TRUE) +
+    theme(legend.position="none", plot.title.position = "plot") +
+  labs(title = "Comparison of Pre & Post survey results",
+       x = "", y = "",
+       caption = "Source: Registrant surveys at time of workshop")
+
+ggsave("output/images/big_picture.svg")
+```
+
+
+![](output/images/big_picture.svg)
