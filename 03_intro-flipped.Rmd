@@ -67,7 +67,7 @@ pre_post_tbl %>%
                                        "Strongly Agree"))) %>% 
   mutate(experience = str_extract(experience, "\\w+(?=_)")) %>% 
   mutate(experience = fct_relevel(experience, levels = c(
-    "scatterplot", "ggplot2", "aes", "multilayer", "documentation")
+    "import", "subset", "scripts", "projects", "reproducible")
   )) %>% 
   ggplot(aes(value)) +
     geom_bar(aes(fill = value), color = "black") +
