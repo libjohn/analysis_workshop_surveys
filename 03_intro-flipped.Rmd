@@ -74,12 +74,12 @@ pre_post_tbl %>%
     facet_grid(experience ~ fct_rev(str_to_title(survey)))+ 
     scale_fill_brewer(palette = "BrBG") + 
     scale_y_continuous(breaks = c(0,3,6)) +
+    scale_x_discrete(labels = scales::label_wrap(10)) +
     hrbrthemes::theme_ipsum(grid = "Y", ticks = TRUE) +
     theme(legend.position="none", plot.title.position = "plot") +
   labs(title = "Comparison of Pre & Post survey results",
        x = "", y = "",
        caption = "Source: Registrant surveys at time of workshop")
-
 
 # ggsave("output/images/big_picture.svg")
 ```
