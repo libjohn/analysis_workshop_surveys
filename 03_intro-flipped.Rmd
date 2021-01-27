@@ -55,7 +55,7 @@ pre_post_tbl <- bind_rows(pre, post)
 
 ## Visualize
 
-```{r big picture, fig.height=10, fig.width=12, message=FALSE, warning=FALSE}
+```{r big picture, fig.height=10, fig.width=15, message=FALSE, warning=FALSE}
 pre_post_tbl %>% 
   select(timestamp, survey, ends_with("_experience")) %>% 
   pivot_longer(ends_with("_experience"),
