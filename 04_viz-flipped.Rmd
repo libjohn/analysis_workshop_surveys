@@ -11,9 +11,9 @@ library(hrbrthemes)
 ## Ingest data
 
 ```{r message=FALSE, warning=FALSE}
-pre <- read_csv("data/20210128_pre_intro-flipped_part1.csv") %>%
+pre <- read_csv("data/20210204_pre_viz-flipped_part2.csv") %>%
   mutate("survey" = "pre")
-post <- read_csv("data/20210128_post_intro-flipped_part1.csv") %>% 
+post <- read_csv("data/20210204_pre_viz-flipped_part2.csv") %>% 
   mutate("survey" = "post")
 ```
 
@@ -22,13 +22,12 @@ post <- read_csv("data/20210128_post_intro-flipped_part1.csv") %>%
 Normalize column labels
 
 ```{r}
-new_names_pre <- c("timestamp", "tools_coder", "tools_models", 
-                   "tools_rdbms", "tools_version_ctrl", "tools_cli", 
+new_names_pre <- c("timestamp", "tools_coder", "tools_viz", 
+                   "tools_version_ctrl", "tools_cli", "tools_rdbms",
                    "import_experience", "scripts_experience", 
-                   "subset_experience",
-                   "projects_experience", 
-                   "reproducible_experience", "self_help",
-                   "search_help", "apply_learning",
+                   "baser_viz_experience", "ggplot2_experience",
+                   "interactive_experience", 
+                   "pivot_experience", "join_experience",
                    "data_mgt_satisfy", "survey")
 new_names_post <- c("timestamp", "tools_coder", "tools_models", 
                    "tools_rdbms", "tools_version_ctrl", "tools_cli", 
@@ -51,12 +50,17 @@ colnames(post) <- new_names_post
 make one table
 
 ```{r}
+post <-  pre
+
+post <- post %>% mutate(survey = "post")
+# glimpse(pre)
+
 pre_post_tbl <- bind_rows(pre, post)
 ```
 
 ## Visualize
 
-```{r big picture, fig.height=10, fig.width=20, message=FALSE, warning=FALSE}
+```{r big picture, fig.height=15, fig.width=20, message=FALSE, warning=FALSE}
 pre_post_tbl %>% 
   select(timestamp, survey, ends_with("_experience")) %>% 
   pivot_longer(ends_with("_experience"),
