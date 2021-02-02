@@ -11,9 +11,9 @@ library(hrbrthemes)
 ## Ingest data
 
 ```{r message=FALSE, warning=FALSE}
-pre <- read_csv("data/Pre_intro-flipped_20210128.csv") %>%
+pre <- read_csv("data/20210128_pre_intro-flipped_part1.csv") %>%
   mutate("survey" = "pre")
-post <- read_csv("data/Pre_intro-flipped_20210128.csv") %>% 
+post <- read_csv("data/20210128_post_intro-flipped_part1.csv") %>% 
   mutate("survey" = "post")
 ```
 
@@ -37,7 +37,8 @@ new_names_post <- c("timestamp", "tools_coder", "tools_models",
                    "projects_experience", 
                    "reproducible_experience", "self_help",
                    "search_help", "apply_learning",
-                   "data_mgt_satisfy", "survey")
+                   "what_worked_qual", "curric_continue_qual", 
+                   "curric_expand_qual", "survey")
 
 
 colnames(pre) <- new_names_pre
@@ -107,4 +108,27 @@ pre_post_tbl %>%
        caption = "Source: Registrant surveys at time of workshop")
 ```
 
+```{r fig.width=12}
+pre_post_tbl %>% 
+  # filter(survey == "post") %>% 
+  select(timestamp, survey, ends_with("_experience")) %>% 
+  pivot_longer(ends_with("_experience"),
+               names_to = "experience") %>% 
+  mutate(value = str_to_title(value)) %>% 
+  mutate(value = fct_relevel(value, levels = c("Strongly Disagree",
+                                       "Disagree",
+                                       "Neutral", "Agree", 
+                                       "Strongly Agree"))) %>% 
+  mutate(experience = str_extract(experience, "\\w+(?=_)")) %>% 
+  ggplot(aes(value)) +
+    geom_bar(aes(fill = value), color = "black") +
+    scale_fill_brewer(palette = "BrBG") + 
+    facet_wrap(~ fct_rev(str_to_title(survey))) +
+    hrbrthemes::theme_ipsum(grid = "Y", ticks = TRUE) +
+    theme(legend.position="none", plot.title.position = "plot") +
+  labs(title = "Conflated experience of survey results",
+       subtitle = "Across all categories",
+       x = "", y = "",
+       caption = "Source: Registrant surveys at time of workshop")
+```
 
