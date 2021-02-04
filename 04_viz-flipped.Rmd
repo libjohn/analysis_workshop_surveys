@@ -50,10 +50,9 @@ colnames(post) <- new_names_post
 make one table
 
 ```{r}
-post <-  pre
+# post <-  pre
 
-post <- post %>% mutate(survey = "post")
-# glimpse(pre)
+# post <- post %>% mutate(survey = "post")
 
 pre_post_tbl <- bind_rows(pre, post)
 ```
@@ -65,6 +64,7 @@ pre_post_tbl %>%
   select(timestamp, survey, ends_with("_experience")) %>% 
   pivot_longer(ends_with("_experience"),
                names_to = "experience") %>% 
+  filter(experience != "import_experience" & experience != "scripts_experience") %>% ################################
   mutate(value = str_to_title(value)) %>% 
   mutate(value = fct_relevel(value, levels = c("Strongly Disagree",
                                        "Disagree",
@@ -78,7 +78,7 @@ pre_post_tbl %>%
     geom_bar(aes(fill = value), color = "black") +
     facet_grid(experience ~ fct_rev(str_to_title(survey)))+ 
     scale_fill_brewer(palette = "BrBG") + 
-    scale_y_continuous(breaks = c(0,3,6)) +
+    scale_y_continuous(breaks = c(0,2,4,6)) +
     scale_x_discrete(labels = scales::label_wrap(10)) +
     hrbrthemes::theme_ipsum(grid = "Y", ticks = TRUE) +
     theme(legend.position="none", plot.title.position = "plot") +
@@ -87,6 +87,8 @@ pre_post_tbl %>%
        caption = "Source: Registrant surveys at time of workshop")
 
 ggsave("output/images/big_picture.svg", width = 15, height = 10, units = "in")
+# ggsave("C:/Users/jrl/Documents/workshop_rfun_flipped/slides/images/pre_post_survey2_20210204.svg",
+#        width = 15, height = 10, units = "in")
 ```
 
 
