@@ -13,7 +13,7 @@ library(hrbrthemes)
 ```{r message=FALSE, warning=FALSE}
 pre <- read_csv("data/20210204_pre_viz-flipped_part2.csv") %>%
   mutate("survey" = "pre")
-post <- read_csv("data/20210204_pre_viz-flipped_part2.csv") %>% 
+post <- read_csv("data/20210204_post_viz-flipped_part2.csv") %>% 
   mutate("survey" = "post")
 ```
 
@@ -29,14 +29,15 @@ new_names_pre <- c("timestamp", "tools_coder", "tools_viz",
                    "interactive_experience", 
                    "pivot_experience", "join_experience",
                    "data_mgt_satisfy", "survey")
-new_names_post <- c("timestamp", "tools_coder", "tools_models", 
-                   "tools_rdbms", "tools_version_ctrl", "tools_cli", 
+new_names_post <- c("timestamp", "search_answers_ability", 
                    "import_experience", "scripts_experience", 
-                   "subset_experience",
-                   "projects_experience", 
-                   "reproducible_experience", "self_help",
-                   "search_help", "apply_learning",
-                   "what_worked_qual", "curric_continue_qual", 
+                   "baser_viz_experience", "ggplot2_experience",
+                   "interactive_experience", 
+                   "pivot_experience", "join_experience",
+                   "clear_answers", "comfort_learning",
+                   "comfort_interacting", "instructor_enthuse",
+                   "instructor_knowledge", "what_worked_qual", 
+                   "curric_continue_qual", 
                    "curric_expand_qual", "survey")
 
 
@@ -50,10 +51,6 @@ colnames(post) <- new_names_post
 make one table
 
 ```{r}
-# post <-  pre
-
-# post <- post %>% mutate(survey = "post")
-
 pre_post_tbl <- bind_rows(pre, post)
 ```
 
